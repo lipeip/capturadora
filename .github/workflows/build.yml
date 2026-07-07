@@ -1,1 +1,49 @@
-as
+name: Compilar capturadora
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Descargar el repositorio
+        uses: actions/checkout@v4
+
+      - name: Instalar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Descargar FFmpeg (incluye ffplay.exe)
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-full.7z" -OutFile ffmpeg.7z
+          7z x ffmpeg.7z -offmpeg_tmp
+          $ff = Get-ChildItem -Path ffmpeg_tmp -Recurse -Filter ffmpeg.exe | Select-Object -First 1
+          $play = Get-ChildItem -Path ffmpeg_tmp -Recurse -Filter ffplay.exe | Select-Object -First 1
+          Copy-Item $ff.FullName -Destination ffmpeg.exe
+          Copy-Item $play.FullName -Destination ffplay.exe
+
+      - name: Instalar PyInstaller
+        run: pip install pyinstaller
+
+      - name: Compilar el .exe
+        shell: pwsh
+        run: pyinstaller --onedir --noconsole capturadora.py
+
+      - name: Juntar todo en la carpeta final
+        shell: pwsh
+        run: |
+          Copy-Item ffmpeg.exe -Destination dist/capturadora/
+          Copy-Item ffplay.exe -Destination dist/capturadora/
+          Copy-Item capturadora.bat -Destination dist/capturadora/ -ErrorAction SilentlyContinue
+          Copy-Item listar.bat -Destination dist/capturadora/ -ErrorAction SilentlyContinue
+
+      - name: Subir el resultado descargable
+        uses: actions/upload-artifact@v4
+        with:
+          name: capturadora-windows
+          path: dist/capturadora
