@@ -1,10 +1,12 @@
 @echo off
-REM Ejecuta este .bat una vez para ver el nombre EXACTO de tu capturadora.
+REM Muestra los dispositivos de video y audio que ve Windows.
 cd /d "%~dp0"
+echo Dispositivos detectados:
+echo.
 ffmpeg -hide_banner -list_devices true -f dshow -i dummy
 echo.
 echo ----------------------------------------------------------
-echo Copia el nombre que aparece junto a (video) -por ejemplo
-echo "USB Video"- y pegalo dentro de capturadora.bat.
+echo El de (video) es tu capturadora. El de (audio) "Digital
+echo Audio Interface" es el sonido HDMI del Mac.
 echo ----------------------------------------------------------
 pause
