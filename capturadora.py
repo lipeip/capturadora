@@ -177,6 +177,11 @@ def matar_anteriores():
     except Exception:
         pass
 
+def reiniciar():
+    # Cierra cualquier ffplay colgado sin tocar las selecciones actuales
+    matar_anteriores()
+    estado.set("Reproducciones cerradas. Pulsa Reproducir cuando quieras.")
+
 # ---------- Reproducir ----------
 
 def construir_comando(video, audio, size, fps, formato, modo):
@@ -370,7 +375,8 @@ btns = ttk.Frame(frm)
 btns.grid(row=6, column=0, columnspan=3, pady=(14, 0))
 ttk.Button(btns, text="Detectar", command=refrescar).grid(row=0, column=0, padx=4)
 ttk.Button(btns, text="Ver modos", command=ver_modos).grid(row=0, column=1, padx=4)
-ttk.Button(btns, text="Reproducir", command=reproducir).grid(row=0, column=2, padx=4)
+ttk.Button(btns, text="↻ Reiniciar", command=reiniciar).grid(row=0, column=2, padx=4)
+ttk.Button(btns, text="▶ Reproducir", command=reproducir).grid(row=0, column=3, padx=4)
 
 ttk.Separator(frm, orient="horizontal").grid(
     row=7, column=0, columnspan=3, sticky="ew", pady=(14, 6))
